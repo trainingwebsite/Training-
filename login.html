@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Login - Aliyu's Tech Training</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a0a0a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#1a1a2e;border-radius:16px;padding:30px 20px;width:100%;max-width:380px;text-align:center;border:1px solid #2a2a3e}
+.login-box .logo{font-size:50px;margin-bottom:10px}
+.login-box h1{color:#4caf50;font-size:20px;margin-bottom:5px}
+.login-box p{color:#999;font-size:11px;margin-bottom:20px}
+.login-box input{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:2px solid #333;background:#0d0d1a;color:white;font-size:13px;outline:none}
+.login-box input:focus{border-color:#4caf50}
+.btn{display:block;width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;color:white}
+.btn-green{background:#0d4a1a}
+.btn-google{background:white;color:#333;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-google img{width:18px}
+.link{color:#4caf50;font-size:12px;text-decoration:none;display:inline-block;margin:5px}
+.link:hover{text-decoration:underline}
+.error{color:#f44336;font-size:11px;margin:5px 0;display:none}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+<div class="logo">🎓</div>
+<h1>Student Login</h1>
+<p>Aliyu's Tech Training</p>
+
+<button class="btn btn-google" onclick="signInWithGoogle()">
+<img src="https://www.google.com/favicon.ico" alt="G"> Sign in with Google
+</button>
+
+<p style="color:#999;font-size:10px;margin:15px 0">OR</p>
+
+<input type="email" id="loginEmail" placeholder="Email address">
+<input type="password" id="loginPass" placeholder="Password">
+<p class="error" id="loginError"></p>
+<button class="btn btn-green" onclick="signIn()">🔐 Login</button>
+
+<p style="margin-top:10px">
+<a href="register.html" class="link">📝 Create Account</a>
+<a href="index.html" class="link">← Back to Home</a>
+</p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAV_ThoHEV4R9zK4AEe1qH-7J1WvYZ4GKI",
+  authDomain: "training-website-46fbb.firebaseapp.com",
+  projectId: "training-website-46fbb",
+  storageBucket: "training-website-46fbb.firebasestorage.app",
+  messagingSenderId: "754362632096",
+  appId: "1:754362632096:web:a9f50db01329c4325046c5"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+onAuthStateChanged(auth, function(user) {
+  if (user) { window.location.href = 'dashboard.html'; }
+});
+
+window.signIn = async function() {
+  var e = document.getElementById('loginEmail').value.trim();
+  var p = document.getElementById('loginPass').value.trim();
+  var err = document.getElementById('loginError');
+  if (!e || !p) { err.innerHTML = 'Fill all fields'; err.style.display = 'block'; return; }
+  try {
+    await signInWithEmailAndPassword(auth, e, p);
+    window.location.href = 'dashboard.html';
+  } catch(error) {
+    err.innerHTML = '❌ ' + error.message;
+    err.style.display = 'block';
+  }
+};
+
+window.signInWithGoogle = async function() {
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = 'dashboard.html';
+  } catch(error) {
+    document.getElementById('loginError').innerHTML = '❌ ' + error.message;
+    document.getElementById('loginError').style.display = 'block';
+  }
+};
+</script>
+</body>
+  </html>
