@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Aliyu's Tech Training</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a0a0a;color:#fff;max-width:480px;margin:0 auto;min-height:100vh}
+.header{background:#0d4a1a;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:16px;color:white}
+.header button{background:#c00;color:white;border:none;padding:8px 14px;border-radius:6px;font-size:11px;cursor:pointer}
+.content{padding:15px}
+.welcome{background:#1a1a2e;padding:20px;border-radius:12px;text-align:center;margin-bottom:15px;border:1px solid #2a2a3e}
+.welcome h2{color:#4caf50;font-size:18px;margin-bottom:5px}
+.welcome p{color:#999;font-size:11px}
+.card{background:#1a1a2e;padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid #2a2a3e}
+.card h3{color:#4caf50;font-size:15px;margin-bottom:8px}
+.lesson-list{list-style:none}
+.lesson-list li{padding:10px;border-bottom:1px solid #2a2a3e;font-size:12px;color:#ccc;display:flex;align-items:center;gap:8px}
+.lesson-list li::before{content:"📖"}
+.lesson-list li.done{color:#4caf50}
+.lesson-list li.done::before{content:"✅"}
+.btn{display:block;width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;text-align:center;color:white}
+.btn-green{background:#0d4a1a}
+.btn-blue{background:#0f3460}
+.footer{text-align:center;padding:15px;color:#555;font-size:10px}
+.progress-bar{width:100%;height:8px;background:#30363d;border-radius:4px;margin:8px 0;overflow:hidden}
+.progress-fill{height:100%;background:#4caf50;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📊 My Dashboard</h1>
+<button onclick="logout()">🚪 Logout</button>
+</div>
+
+<div class="content">
+<div class="welcome">
+<h2>Welcome, <span id="studentName">Student</span>! 👋</h2>
+<p id="studentCourse">Loading your course...</p>
+</div>
+
+<div class="card">
+<h3>📈 Your Progress</h3>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<p style="font-size:11px;color:#999"><span id="completedLessons">0</span>/8 Lessons Completed</p>
+</div>
+
+<div class="card">
+<h3>📚 Course Lessons</h3>
+<ul class="lesson-list" id="lessonList">
+<li>Loading lessons...</li>
+</ul>
+</div>
+
+<button class="btn btn-green" onclick="window.open('index.html','_self')">🏠 Back to Home</button>
+<button class="btn btn-blue" onclick="alert('Contact your instructor on WhatsApp: 07046183743')">📞 Need Help?</button>
+</div>
+
+<div class="footer">© 2026 Aliyu's Tech Training | Powered by Firebase</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAV_ThoHEV4R9zK4AEe1qH-7J1WvYZ4GKI",
+  authDomain: "training-website-46fbb.firebaseapp.com",
+  projectId: "training-website-46fbb",
+  storageBucket: "training-website-46fbb.firebasestorage.app",
+  messagingSenderId: "754362632096",
+  appId: "1:754362632096:web:a9f50db01329c4325046c5"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+var lessons = [
+  "Introduction & Setup", "HTML Basics", "CSS Styling", "JavaScript Fundamentals",
+  "Firebase Authentication", "Firestore Database", "Building Projects", "Deployment & Launch"
+];
+
+onAuthStateChanged(auth, async function(user) {
+  if (!user) { window.location.href = 'login.html'; return; }
+  
+  try {
+    var studentDoc = await getDoc(doc(db, 'students', user.uid));
+    if (studentDoc.exists()) {
+      var data = studentDoc.data();
+      document.getElementById('studentName').innerHTML = data.name || user.email.split('@')[0];
+      document.getElementById('studentCourse').innerHTML = '📚 ' + (data.course || 'No course selected');
+    } else {
+      document.getElementById('studentName').innerHTML = user.email.split('@')[0];
+    }
+  } catch(e) {
+    document.getElementById('studentName').innerHTML = user.email.split('@')[0];
+  }
+  
+  // Show lessons
+  var h = '';
+  lessons.forEach(function(l, i) {
+    h += '<li>' + l + '</li>';
+  });
+  document.getElementById('lessonList').innerHTML = h;
+  document.getElementById('progressFill').style.width = '25%';
+  document.getElementById('completedLessons').innerHTML = '2';
+});
+
+window.logout = function() {
+  signOut(auth).then(function() { window.location.href = 'index.html'; });
+};
+</script>
+</body>
+</html>
