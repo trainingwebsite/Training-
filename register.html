@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Aliyu's Tech Training</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a0a0a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.register-box{background:#1a1a2e;border-radius:16px;padding:30px 20px;width:100%;max-width:400px;text-align:center;border:1px solid #2a2a3e}
+.register-box .logo{font-size:50px;margin-bottom:10px}
+.register-box h1{color:#4caf50;font-size:20px;margin-bottom:5px}
+.register-box p{color:#999;font-size:11px;margin-bottom:15px}
+.register-box input,.register-box select{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:2px solid #333;background:#0d0d1a;color:white;font-size:13px;outline:none}
+.register-box input:focus,.register-box select:focus{border-color:#4caf50}
+.register-box select{appearance:none}
+.btn{display:block;width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;color:white}
+.btn-green{background:#0d4a1a}
+.btn-gold{background:gold;color:#000}
+.btn-whatsapp{background:#25D366;color:white}
+.link{color:#4caf50;font-size:12px;text-decoration:none;display:inline-block;margin:5px}
+.link:hover{text-decoration:underline}
+.error{color:#f44336;font-size:11px;margin:5px 0;display:none}
+.success{color:#4caf50;font-size:11px;margin:5px 0;display:none}
+.payment-box{background:#0d0d1a;border-radius:10px;padding:15px;margin:15px 0;text-align:left;border:1px dashed gold}
+.payment-box h4{color:gold;font-size:13px;margin-bottom:8px}
+.payment-box .bank{background:#1a1a2e;padding:10px;border-radius:8px;margin:6px 0}
+.payment-box .bank-name{color:#4caf50;font-weight:bold;font-size:12px}
+.payment-box .bank-detail{color:#ccc;font-size:11px}
+.steps{text-align:left;font-size:10px;color:#999;margin:8px 0;padding-left:18px}
+.steps li{margin:4px 0}
+</style>
+</head>
+<body>
+
+<div class="register-box">
+<div class="logo">📝</div>
+<h1>Create Account</h1>
+<p>Aliyu's Tech Training</p>
+
+<input type="text" id="regName" placeholder="Full Name">
+<input type="email" id="regEmail" placeholder="Email address">
+<input type="tel" id="regPhone" placeholder="Phone Number">
+<select id="regCourse">
+<option value="">Select Course</option>
+<option value="Web Development (₦10,000)">💻 Web Development (₦10,000)</option>
+<option value="Firebase (₦5,000)">☁️ Firebase (₦5,000)</option>
+<option value="HTML & CSS (₦3,000)">🎨 HTML & CSS (₦3,000)</option>
+<option value="PWA Apps (₦5,000)">📱 PWA Apps (₦5,000)</option>
+</select>
+<input type="password" id="regPass" placeholder="Password">
+
+<div class="payment-box">
+<h4>💰 PAYMENT DETAILS</h4>
+<p style="font-size:10px;color:#999;margin-bottom:8px">Transfer to ANY of these accounts:</p>
+
+<div class="bank">
+<div class="bank-name">🟢 OPay</div>
+<div class="bank-detail">Account: 7046183743<br>Name: Aliyu Salihu</div>
+</div>
+
+<div class="bank">
+<div class="bank-name">🔵 Zenith Bank</div>
+<div class="bank-detail">Account: 4204755708<br>Name: Aliyu Salihu</div>
+</div>
+
+<p style="font-size:10px;color:gold;margin-top:8px">⚠️ Important:</p>
+<ol class="steps">
+<li>Transfer the course fee to any account above</li>
+<li>Save the transfer receipt/screenshot</li>
+<li>Fill the form above and register</li>
+<li>Send payment proof on WhatsApp</li>
+<li>Your account will be activated within 1 hour</li>
+</ol>
+</div>
+
+<p class="error" id="regError"></p>
+<p class="success" id="regSuccess"></p>
+<button class="btn btn-green" onclick="signUp()">📝 Register</button>
+<button class="btn btn-whatsapp" onclick="window.open('https://wa.me/2347046183743?text=I%20have%20registered%20and%20made%20payment.%20Here%20is%20my%20proof:')">📱 Send Payment Proof on WhatsApp</button>
+
+<p style="margin-top:10px">
+<a href="login.html" class="link">🔐 Already have account? Login</a>
+<a href="index.html" class="link">← Back to Home</a>
+</p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAV_ThoHEV4R9zK4AEe1qH-7J1WvYZ4GKI",
+  authDomain: "training-website-46fbb.firebaseapp.com",
+  projectId: "training-website-46fbb",
+  storageBucket: "training-website-46fbb.firebasestorage.app",
+  messagingSenderId: "754362632096",
+  appId: "1:754362632096:web:a9f50db01329c4325046c5"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.signUp = async function() {
+  var n = document.getElementById('regName').value.trim();
+  var e = document.getElementById('regEmail').value.trim();
+  var p = document.getElementById('regPhone').value.trim();
+  var c = document.getElementById('regCourse').value;
+  var pw = document.getElementById('regPass').value;
+  var err = document.getElementById('regError');
+  var suc = document.getElementById('regSuccess');
+  
+  err.style.display = 'none'; suc.style.display = 'none';
+  if (!n || !e || !p || !c || !pw) { err.innerHTML = 'Fill all fields'; err.style.display = 'block'; return; }
+  
+  try {
+    var cred = await createUserWithEmailAndPassword(auth, e, pw);
+    await setDoc(doc(db, 'students', cred.user.uid), {
+      name: n, email: e, phone: p, course: c, status: 'pending', createdAt: new Date()
+    });
+    suc.innerHTML = '✅ Account created! Send payment proof on WhatsApp to activate.';
+    suc.style.display = 'block';
+  } catch(error) {
+    err.innerHTML = '❌ ' + error.message;
+    err.style.display = 'block';
+  }
+};
+</script>
+</body>
+  </html>
